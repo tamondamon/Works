@@ -1,0 +1,91 @@
+const THEME_LIST = [
+"桃太郎",
+"浦島太郎",
+"金太郎",
+"一寸法師",
+"かぐや姫（竹取物語）",
+"笠地蔵",
+"因幡の白うさぎ",
+"おむすびころりん",
+"かちかち山",
+"こぶとりじいさん",
+"さるかに合戦",
+"鶴の恩返し",
+"花咲かじいさん",
+"ぶんぶく茶釜",
+"わらしべ長者",
+"舌切り雀",
+"織姫と彦星",
+"一休さん",
+"ピノキオ",
+"ピーターパン",
+"ジャックと豆の木",
+"フランダースの犬",
+"シンデレラ",
+"マッチ売りの少女",
+"人魚姫",
+"白雪姫",
+"3匹の子ぶた",
+"ブレーメンの音楽隊",
+"ヘンゼルとグレーテル",
+"いばら姫(眠れる森の美女)",
+"オオカミと七匹の子ヤギ",
+"ラプンツェル",
+"裸の王様",
+"オズの魔法使い",
+"ハーメルンの笛吹き男",
+"青ひげ",
+"赤ずきん",
+"長靴をはいた猫",
+"不思議の国のアリス",
+"フランダースの犬",
+"アラジンと魔法のランプ",
+"青い鳥"];
+
+
+function doPost(e) {
+  //スプレッドシートを開く
+  var spreadsheet = SpreadsheetApp.openByUrl('--- spreadsheet URL ---');
+  var sheet = spreadsheet.getSheetByName('--- sheet name ---');
+  var lastRow = sheet.getLastRow();
+  //スプレッドシートの内容を取得
+  var data = sheet.getRange(1,1,lastRow,1).getValues();
+
+  //エセ芸術家の決定
+  var random = Math.floor( Math.random() * sheet.getLastRow());
+  //お題の決定
+  var themeID = Math.floor( Math.random() * (THEME_LIST.length+1));
+  var theme = THEME_LIST[themeID];
+
+  //SlackにDMを送信
+  for(let i = 0; i < lastRow; i++){
+    //送る文字列の決定
+    if(i == random) var response = "あなたはエセ芸術家です";
+    else var response = 'お題は「' +theme+ '」です。';
+
+
+    var url = 'https://slack.com/api/chat.postMessage';
+    var options = {
+      "method" : "POST",
+      "contentType": "application/x-www-form-urlencoded",
+      "payload" : {
+        "token": "--- Token ---",　//必要なスコープはbot・chat:write:user・chat:write:bot
+        "channel":data[i][0],
+        "text": response
+      }
+    };
+    //送信
+    UrlFetchApp.fetch(url, options);
+
+  }
+
+  //スプレッドシートの初期化
+  sheet.getRange(1,1,sheet.getLastRow(),1).clear();
+
+  //チャンネルに通知
+  var message = {
+    response_type: 'in_channel',
+    text: 'お題を送信しました'
+  };
+  return ContentService.createTextOutput(JSON.stringify(message)).setMimeType(ContentService.MimeType.JSON);
+}

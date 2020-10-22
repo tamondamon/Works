@@ -1,0 +1,22 @@
+function doPost(e) {
+  //参加者のIDの取得
+  var userName = e.parameter.user_name;
+  var userID = e.parameter.user_id;
+  setSheet(userID);
+
+  //チャンネルへ通知
+  var response = {
+    response_type: 'in_channel',
+    text: userName + ' が参加しました'
+  };
+
+  return ContentService.createTextOutput(JSON.stringify(response)).setMimeType(ContentService.MimeType.JSON);
+}
+
+
+function setSheet(username){
+  var spreadsheet = SpreadsheetApp.openByUrl('--- URL of Spreadsheet ---');
+  var sheet = spreadsheet.getSheetByName('--- name of sheet ---');
+  var last_row = sheet.getLastRow();
+  sheet.getRange((last_row + 1), 1).setValue(username);
+}
