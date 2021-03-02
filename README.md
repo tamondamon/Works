@@ -3,6 +3,9 @@
 
 ## Building Blocks
 Oculus Questを用いたVRパズルゲーム及びVR積木ゲームです。
+以下のURLにて体験の様子を閲覧できます。
+
+https://www.youtube.com/watch?v=JzAeMJ7sVWQ
 
 この作品はユニティちゃんライセンス条項の元に提供されています
 
